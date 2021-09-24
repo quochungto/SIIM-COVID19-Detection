@@ -1,10 +1,18 @@
 import sys
 sys.path.append('.')
 
+# stdlib
+import os
+from glob import glob
+from tqdm.auto import tqdm
+import re
+import time
 import argparse
-from utils.torch_common import seed_everything
+
 from global_config import Config
-from func import yolo_infer
+from utils.file import Logger
+from utils.torch_common import seed_everything, memory_cleanup
+from func import make_fold, allocate_files, get_image_sub
 
 def yolo_infer(ck_path, image_size=512,
                batch_size=16,
@@ -57,10 +65,10 @@ def yolo_infer(ck_path, image_size=512,
                             class_names=Config.class_names,
                             is_train=False)
         
-        exp_path = f'./detection/{yolo_ver}/runs/detect/exp'
+        exp_path = f'./detection/yolo/{yolo_ver}/runs/detect/exp'
         if os.path.exists(exp_path): shutil.rmtree(exp_path)
 
-        os.chdir(f'./detection/{yolo_ver}')
+        os.chdir(f'./detection/yolo/{yolo_ver}')
 
         infer_command = f'python ./detect.py \
         --weights {"..../" + ck_path} \
@@ -87,10 +95,10 @@ def yolo_infer(ck_path, image_size=512,
                             fold_path=fold_path,
                             duplicate_path=duplicate_path)
 
-        exp_path = f'./detection/{yolo_ver}/runs/test/exp'
+        exp_path = f'./detection/yolo/{yolo_ver}/runs/test/exp'
         if os.path.exists(exp_path): shutil.rmtree(exp_path)
 
-        os.chdir(f'./detection/{yolo_ver}')
+        os.chdir(f'./detection/yolo/{yolo_ver}')
 
         infer_command = f'python \
         ./test.py \
@@ -99,7 +107,7 @@ def yolo_infer(ck_path, image_size=512,
         --conf {conf_thresh} \
         --iou {iou_thresh} \
         --weights {"..../" + ck_path} \
-        --data {../data.yaml} \
+        --data {"./../../../" + Config.yaml_data_path} \
         --augment \
         --save-txt \
         --save-conf \
