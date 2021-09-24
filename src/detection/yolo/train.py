@@ -12,7 +12,7 @@ from global_config import Config
 from func import allocate_files
 
 def yolo_train(folds, epochs, batch_size, image_size, weight='yolov5x', pseudo=False, device=0):
-    result_path = 'yolo_result'
+    result_path = '../result/yolo/checkpoints'
     output_paths = []
     pseudo_csv_path = '../dataset/pseudo.csv' if pseudo else None
     yolo_ver = 'yolov5' if 'yolov5' in weight else 'yolotrs' if 'yolotrs' in weight else None
@@ -26,7 +26,7 @@ def yolo_train(folds, epochs, batch_size, image_size, weight='yolov5x', pseudo=F
         allocate_files(fold,
                         csv_path=Config.csv_path,
                         yaml_path=Config.yaml_data_path,
-                        save_dir='../dataset/chest',
+                        save_dir='../../../../dataset/chest',
                         num_classes=Config.num_classes,
                         class_names=Config.class_names,
                         is_train=True,
@@ -48,6 +48,7 @@ def yolo_train(folds, epochs, batch_size, image_size, weight='yolov5x', pseudo=F
         --device {device} \
         --cache'
         os.system(train_command)
+        os.chdir('../../..')
 
         exp_path = f'./detection/yolo/{yolo_ver}/runs/train/exp'
         prefix = '%s_fold%d_bsize%d_%d_%d'%(yolo_ver, fold, batch_size, image_size, epochs)

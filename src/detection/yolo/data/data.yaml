@@ -1,5 +1,5 @@
 names:
 - opacity
 nc: 1
-train: ../dataset/chest/images/train
-val: ../dataset/chest/images/val
+train: ../../../../dataset/chest/images/train
+val: ../../../../dataset/chest/images/val

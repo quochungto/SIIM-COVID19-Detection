@@ -3,6 +3,7 @@ sys.path.append('.')
 
 # stdlib
 import os
+import shutil
 from glob import glob
 from tqdm.auto import tqdm
 import re
@@ -60,7 +61,7 @@ def yolo_infer(ck_path, image_size=512,
         test_image_dir = allocate_files(None, 
                             csv_path=Config.csv_path,
                             yaml_path=None,
-                            save_dir='../dataset/chest',
+                            save_dir='../../../dataset/chest',
                             num_classes=Config.num_classes,
                             class_names=Config.class_names,
                             is_train=False)
@@ -71,11 +72,11 @@ def yolo_infer(ck_path, image_size=512,
         os.chdir(f'./detection/yolo/{yolo_ver}')
 
         infer_command = f'python ./detect.py \
-        --weights {"..../" + ck_path} \
+        --weights {"../../../" + ck_path} \
         --img {image_size} \
         --conf {conf_thresh} \
         --iou {iou_thresh} \
-        --source {"..../" + test_image_dir} \
+        --source {"../../../../" + test_image_dir} \
         --augment \
         --save-txt \
         --save-conf \
@@ -88,7 +89,7 @@ def yolo_infer(ck_path, image_size=512,
         _, df_valid = make_fold('train-%d'%fold, Config.csv_path, fold_path, duplicate_path)
         allocate_files(fold, csv_path=Config.csv_path,
                             yaml_path=Config.yaml_data_path,
-                            save_dir='../dataset/chest',
+                            save_dir='../../../../dataset/chest',
                             num_classes=Config.num_classes,
                             class_names=Config.class_names,
                             is_train=False,
@@ -106,7 +107,7 @@ def yolo_infer(ck_path, image_size=512,
         --img {image_size} \
         --conf {conf_thresh} \
         --iou {iou_thresh} \
-        --weights {"..../" + ck_path} \
+        --weights {"../../../" + ck_path} \
         --data {"./../../../" + Config.yaml_data_path} \
         --augment \
         --save-txt \
@@ -116,6 +117,7 @@ def yolo_infer(ck_path, image_size=512,
         --verbose'
         os.system(infer_command)
 
+    os.chdir('../../..')
     prediction_path = os.path.join(exp_path, 'labels')
     df_sub = get_image_sub(prediction_path, df_valid)
     df_sub.to_csv(os.path.join(exp_path, 'image_sub.csv'), index=False)

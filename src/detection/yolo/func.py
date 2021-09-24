@@ -15,7 +15,7 @@ import pandas as pd
 
 from global_config import Config
 from utils.file import Logger, read_list_from_file
-from utils.him import downsize_boxes, upsize_boxes, voc2yolo
+from utils.him import downsize_boxes, upsize_boxes, voc2yolo, yolo2voc
 from utils.torch_common import memory_cleanup
 #from utils.siim.yolo import allocate_files
 
