@@ -1,6 +1,7 @@
+__pycache__/
 siim/
+dataset/*
 note
 *.vim
 *.swp
 *.swo
-dataset/*
