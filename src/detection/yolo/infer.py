@@ -1,6 +1,126 @@
+import sys
+sys.path.append('.')
+
 import argparse
+from utils.torch_common import seed_everything
 from global_config import Config
 from func import yolo_infer
+
+def yolo_infer(ck_path, image_size=512,
+               batch_size=16,
+               iou_thresh=0.5,
+               conf_thresh=0.001,
+               mode='remote',
+               save_dir='../result/yolo/submit',
+               fold_path=None,
+               duplicate_path=None,
+               device=0):
+    t0 = time.time()
+    memory_cleanup()
+    yolo_ver = 'yolov5' if 'yolov5' in ck_path else 'yolotrs' if 'yolotrs' in ck_path else None
+    assert yolo_ver is not None
+    
+    t = time.strftime('%Y%m%d_%H%M%S')
+    fold = -1
+    for s in ck_path.split('/'):
+        for ss in s.split('.'):
+            for sss in ss.split('_'):
+                if len(sss) == 5 and 'fold' in sss:
+                    fold = int(sss.replace('fold',''))
+                    break
+                if fold != -1: break
+
+    assert fold > -1, 'checkpoint path is not in correct structure'
+    
+    ck_name = 'fold%d'%fold
+    sname = re.sub('[^\w_-]', '', '%d_iou%.2f_conf%.4f'%(image_size, iou_thresh, conf_thresh))
+    save_dir = os.path.join(save_dir, mode, sname, ck_name, t)
+    os.makedirs(save_dir, exist_ok=True)
+
+    #----logging
+    log = Logger()
+    log.open('../logging/yolo_valid.txt', mode='a')
+    log.write(f'infer {ck_name} - fold {fold} - {sname} - {mode}\n'.upper())
+    log.write(t+'\n')
+    log.write(ck_path+'\n')
+    log.write('mode=%s,fold=%d,batch_size=%d,image_size=%d,iou=%.4f,conf=%.4f\n'\
+              %(mode,fold,batch_size,image_size,iou_thresh,conf_thresh))
+    #----
+    
+    if mode == 'remote':
+        df_valid = make_fold('test', Config.csv_path)
+        test_image_dir = allocate_files(None, 
+                            csv_path=Config.csv_path,
+                            yaml_path=None,
+                            save_dir='../dataset/chest',
+                            num_classes=Config.num_classes,
+                            class_names=Config.class_names,
+                            is_train=False)
+        
+        exp_path = f'./detection/{yolo_ver}/runs/detect/exp'
+        if os.path.exists(exp_path): shutil.rmtree(exp_path)
+
+        os.chdir(f'./detection/{yolo_ver}')
+
+        infer_command = f'python ./detect.py \
+        --weights {"..../" + ck_path} \
+        --img {image_size} \
+        --conf {conf_thresh} \
+        --iou {iou_thresh} \
+        --source {"..../" + test_image_dir} \
+        --augment \
+        --save-txt \
+        --save-conf \
+        --exist-ok \
+        --nosave \
+        --device {device}'
+        os.system(infer_command)
+
+    elif mode == 'local':
+        _, df_valid = make_fold('train-%d'%fold, Config.csv_path, fold_path, duplicate_path)
+        allocate_files(fold, csv_path=Config.csv_path,
+                            yaml_path=Config.yaml_data_path,
+                            save_dir='../dataset/chest',
+                            num_classes=Config.num_classes,
+                            class_names=Config.class_names,
+                            is_train=False,
+                            fold_path=fold_path,
+                            duplicate_path=duplicate_path)
+
+        exp_path = f'./detection/{yolo_ver}/runs/test/exp'
+        if os.path.exists(exp_path): shutil.rmtree(exp_path)
+
+        os.chdir(f'./detection/{yolo_ver}')
+
+        infer_command = f'python \
+        ./test.py \
+        --batch-size {batch_size} \
+        --img {image_size} \
+        --conf {conf_thresh} \
+        --iou {iou_thresh} \
+        --weights {"..../" + ck_path} \
+        --data {../data.yaml} \
+        --augment \
+        --save-txt \
+        --save-conf \
+        --device {device} \
+        --exist-ok \
+        --verbose'
+        os.system(infer_command)
+
+    prediction_path = os.path.join(exp_path, 'labels')
+    df_sub = get_image_sub(prediction_path, df_valid)
+    df_sub.to_csv(os.path.join(exp_path, 'image_sub.csv'), index=False)
+    df_valid.to_csv(os.path.join(exp_path, 'valid.csv'), index=False)
+    if mode == 'local':
+        log.write('opacity map = %.5f\nnone map = %.5f\n'%map_2cls(df_valid, df_sub))
+
+    log.write('Result saved to %s\n'%save_dir)
+    t1 = time.time()
+    log.write('Inference took %ds\n\n'%(t1 - t0))
+    log.write('============================================================\n\n')
+
+    return shutil.move(exp_path, save_dir)
 
 def parse_opt():
     parser = argparse.ArgumentParser()
@@ -21,45 +141,12 @@ def main():
     
     opt = parse_opt()
     
-    # parser
     ck_paths, image_size, batch_size, \
     iou, conf, mode, debug, \
     redownload, device = \
     opt.ck_paths, opt.image_size, opt.batch_size, \
     opt.iou_thr, opt.conf_thr, opt.mode, opt.debug, \
     opt.redownload, opt.device
-
-    ## download datasets
-    #datasets = [
-    #        'quochungto/4-june-2021', 
-    #        'quochungto/1024x1024-png-siim',
-    #        'quochungto/metadatasets-siim',
-    #        'quochungto/yolov5-official-v50']
-    #print('============== downloading datasets ==============')
-    #download_kaggle_datasets(datasets, force=redownload)
-    #print(f'downloaded datasets: {os.listdir(INPUT_BASE)}')
-
-    ## correct file paths
-    #csv_path = os.path.join(INPUT_BASE, 'metadatasets-siim/meta_1024_colab.csv')
-    #temp = pd.read_csv(csv_path)
-    #temp['filepath'] = temp['filepath'].apply(lambda x: x.replace('/content/kaggle_datasets', INPUT_BASE))
-    #if debug: 
-    #    temp = pd.concat([temp[temp['split']=='train'][:15], temp[temp['split']=='test'][:5]])
-    #temp.to_csv(os.path.join(INPUT_BASE, 'meta.csv'), index=False)
-
-    ## install yolov5
-    #if not os.path.exists(os.path.join(WORKING_BASE, 'yolov5')):
-    #    print('Installing Yolov5 ... ', end='', flush=True)
-    #    copy_and_overwrite(os.path.join(INPUT_BASE, 'yolov5-official-v50/yolov5-5.0'), os.path.join(WORKING_BASE, 'yolov5'))
-    #    os.chdir(os.path.join(WORKING_BASE, 'yolov5'))
-    #    os.system('pip install -q -r requirements.txt')
-    #    os.chdir(WORKING_BASE)
-    #    print('Done!')
-
-    # infer
-    #if debug:
-    #    folds = [0]
-    #    epochs = 1
 
     for ck_path in ck_paths:
         yolo_infer(ck_path,

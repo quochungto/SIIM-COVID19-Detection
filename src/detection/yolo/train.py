@@ -84,51 +84,9 @@ def main():
     opt.image_size, opt.batch_size, \
     opt.pseudo, opt.debug, opt.redownload, opt.device
     
-    # download datasets
-    #datasets = [
-    #        'quochungto/4-june-2021', 
-    #        'quochungto/1024x1024-png-siim',
-    #        'quochungto/metadatasets-siim',
-    #        #'quochungto/files-for-psuedo-label-siim'
-    #        'quochungto/yolov5-official-v50']
-
-    #pseudo_datasets = ['quochungto/covid19-posi-dump-siim',
-    #                  'raddar/ricord-covid19-xray-positive-tests',]
-
-    #print('============== downloading dataset ==============')
-    #download_kaggle_datasets(datasets, force=redownload)
-    #if pseudo: 
-    #    download_kaggle_datasets(pseudo_datasets, force=redownload)
-    #    download_kaggle_datasets(['quochungto/files-for-psuedo-label-siim'], force=True)
-
-        # corret file paths
-    #    pseudo_csv_path = os.path.join(INPUT_BASE, 'files-for-psuedo-label-siim/image_level_pseudo_low_none_06000_high_none_06000_op_00950.csv')
-    #    temp = pd.read_csv(pseudo_csv_path)
-    #    temp['filepath'] = temp['colab_filepath'].apply(lambda x: x.replace('/content/kaggle_datasets', INPUT_BASE))
-    #    if debug: temp = temp[:15]
-    #    temp.to_csv(os.path.join(INPUT_BASE, 'pseudo.csv'), index=False)
-    #    
-    #csv_path = os.path.join(INPUT_BASE, 'metadatasets-siim/meta_1024_colab.csv')
-    #temp = pd.read_csv(csv_path)
-    #temp['filepath'] = temp['filepath'].apply(lambda x: x.replace('/content/kaggle_datasets', INPUT_BASE))
-    #if debug: temp = temp[:15]
-    #temp.to_csv(os.path.join(INPUT_BASE, 'meta.csv'), index=False)
-    
-    #print(f'downloaded datasets: {os.listdir(INPUT_BASE)}')
-
-    # install yolov5
-    #if not os.path.exists(os.path.join(WORKING_BASE, 'yolov5')):
-    #    print('Installing Yolov5 ... ', end='', flush=True)
-    #    copy_and_overwrite(os.path.join(INPUT_BASE, 'yolov5-official-v50/yolov5-5.0'), os.path.join(WORKING_BASE, 'yolov5'))
-    #    os.chdir(os.path.join(WORKING_BASE, 'yolov5'))
-    #    os.system('pip install -q -r requirements.txt')
-    #    os.chdir(WORKING_BASE)
-    #    print('Done!')
-
-    # train
-    #if debug:
-    #    folds = [0]
-    #    epochs = 1
+    if debug:
+        folds = [0]
+        epochs = 1
 
     yolo_train(folds, epochs, batch_size, image_size, weight=weight, pseudo=pseudo, device=device)
 

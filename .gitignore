@@ -1,0 +1,6 @@
+siim/
+note
+*.vim
+*.swp
+*.swo
+dataset/*
