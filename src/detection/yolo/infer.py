@@ -12,6 +12,7 @@ import argparse
 
 from global_config import Config
 from utils.file import Logger
+from utils.metrics import map_2cls
 from utils.torch_common import seed_everything, memory_cleanup
 from func import make_fold, allocate_files, get_image_sub
 

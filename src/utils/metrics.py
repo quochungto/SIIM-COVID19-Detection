@@ -41,6 +41,16 @@ def sub_csv2voc(df):
     return all_bboxes
 
 
+def extract_none_probs(opacity_probs):
+    none_probs = []
+
+    for image_probs in opacity_probs:
+        none_prob = np.prod(1 - np.array(image_probs))
+        none_probs.append(none_prob)
+
+    return none_probs
+
+
 def voc_map(pred, truth, iou_thresholds=0.5):
     map_fn = MetricBuilder.build_evaluation_metric('map_2d', async_mode=True, num_classes=1)
 
