@@ -43,8 +43,8 @@ def yolo_train(folds, epochs, batch_size, image_size, weight='yolov5x', pseudo=F
         --batch-size {batch_size} \
         --img {image_size} \
         --weights {weight}.pt \
-        --data {"../data.yaml"} \
-        --hyp {"../hyp.yaml"} \
+        --data {"./../../../" + Config.yaml_data_path} \
+        --hyp {"./../../../" + Config.yaml_hyp_path} \
         --device {device} \
         --cache'
         os.system(train_command)
