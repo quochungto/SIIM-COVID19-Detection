@@ -102,7 +102,7 @@ $ cd ./src
 ### 4.1.1. Train
 Train detectors including ```yolov5s, yolov5m, yolov5l, yolov5x, yolov5s6, yolov5m6, yolov5l6, yolov5x6, yolotrs```
 ```
-# Train a Yolo-Transfomer-s for 3 epochs on folds 0 and 1
+# Train a Yolo-Transformer-s for 3 epochs on folds 0 and 1
 $ python ./detection/yolo/train.py --weight yolotrs --folds 0,1 --img 640 --batch 16
 ```
 To train on both train data and pseudo-labeled data, add flag ```--pseduo path/to/csv``` to the end of the above command.
@@ -115,7 +115,7 @@ $     ../result/yolo/checkpoints/best1.pt \
 $ --iou 0.5 \                               # box fusion iou threshold 
 $ --conf 0.0001 \                           # box fusion skip box threshold
 $ --mode remote \                           # 'local' mode for evaluating on validation dataset,
-                                              'remote' mode for predicting on test dataset
+                                              'remote' mode for predicting on test dataseti,
                                               'pseudo' mode for predicting on external datasets
 $ --image 614 \
 $ --batch 32
@@ -153,7 +153,7 @@ $     ../result/mmdet/checkpoints/best1.pt \
 $ --iou 0.5 \                                # box fusion iou threshold 
 $ --conf 0.0001 \                            # box fusion skip box threshold
 $ --mode pseudo \                            # 'local' mode for evaluating on validation dataset,
-                                               'remote' mode for predicting on test dataset
+                                               'remote' mode for predicting on test dataset,
                                                'pseudo' mode for predicting on external datasets
 $ --image 614 \
 $ --batch 32
@@ -168,7 +168,7 @@ $        ../result/best1.csv \
 $ -ws 2 1 \                    # ensemble weights in same order as -paths
 $ --iou 0.6 \                  # box fusion iou threshold
 $ --conf 0.001 \               # box fusion skip box threshold
-$ --none 0.6 \                 # theshold for hard-labeling images as none-class
+$ --none 0.6 \                 # threshold for hard-labeling images as none-class
 $ --opacity 0.095              # threshold for hard-labeling images as opacity-class
 ```
 Ouput .csv files will be saved at ```./result/pseudo/labeled```
@@ -187,7 +187,7 @@ $ --iou 0.6 \                               # box fusion iou threshold
 $ --conf 0.001                              # box fusion skip box threshold
 ```
 
-## 7. Softwares & Resources
+## 7. Software & Resources
 [Pytorch](https://github.com/pytorch/pytorch)\
 [Albumentations](https://github.com/albumentations-team/albumentations)\
 [YoloV5](https://github.com/ultralytics/yolov5)\

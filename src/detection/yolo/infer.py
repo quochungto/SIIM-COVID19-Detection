@@ -57,36 +57,7 @@ def yolo_infer(ck_path, image_size=512,
               %(mode,fold,batch_size,image_size,iou_thresh,conf_thresh))
     #----
     
-    if mode == 'remote':
-        df_valid = make_fold('test', Config.csv_path)
-        test_image_dir = allocate_files(None, 
-                            csv_path=Config.csv_path,
-                            yaml_path=None,
-                            save_dir='../../../dataset/chest',
-                            num_classes=Config.num_classes,
-                            class_names=Config.class_names,
-                            is_train=False)
-        
-        exp_path = f'./detection/yolo/{yolo_ver}/runs/detect/exp'
-        if os.path.exists(exp_path): shutil.rmtree(exp_path)
-
-        os.chdir(f'./detection/yolo/{yolo_ver}')
-
-        infer_command = f'python ./detect.py \
-        --weights {"../../../" + ck_path} \
-        --img {image_size} \
-        --conf {conf_thresh} \
-        --iou {iou_thresh} \
-        --source {"../../../../" + test_image_dir} \
-        --augment \
-        --save-txt \
-        --save-conf \
-        --exist-ok \
-        --nosave \
-        --device {device}'
-        os.system(infer_command)
-
-    elif mode == 'local':
+    if mode == 'local':
         _, df_valid = make_fold('train-%d'%fold, Config.csv_path, fold_path, duplicate_path)
         allocate_files(fold, csv_path=Config.csv_path,
                             yaml_path=Config.yaml_data_path,
@@ -116,7 +87,59 @@ def yolo_infer(ck_path, image_size=512,
         --device {device} \
         --exist-ok \
         --verbose'
+       os.system(infer_command)
+
+    elif mode == 'remote':
+        df_valid = make_fold('test', Config.csv_path)
+        test_image_dir = allocate_files(None, 
+                            csv_path=Config.csv_path,
+                            yaml_path=None,
+                            save_dir='../../../dataset/chest',
+                            num_classes=Config.num_classes,
+                            class_names=Config.class_names,
+                            is_train=False)
+        
+        exp_path = f'./detection/yolo/{yolo_ver}/runs/detect/exp'
+        if os.path.exists(exp_path): shutil.rmtree(exp_path)
+
+        os.chdir(f'./detection/yolo/{yolo_ver}')
+
+        infer_command = f'python ./detect.py \
+        --weights {"../../../" + ck_path} \
+        --img {image_size} \
+        --conf {conf_thresh} \
+        --iou {iou_thresh} \
+        --source {"../../../../" + test_image_dir} \
+        --augment \
+        --save-txt \
+        --save-conf \
+        --exist-ok \
+        --nosave \
+        --device {device}'
         os.system(infer_command)
+
+    elif mode == 'pseudo':
+	df_valid = pd.read_csv('../dataset/image-level-psuedo-label-metadata-siim/bimcv_ricord.csv')
+	test_image_dir = '../dataset/chest'
+	allocate_pseudo_files(test_image_dir)
+
+        exp_path = f'./detection/yolo/{yolo_ver}/runs/detect/exp'
+        if os.path.exists(exp_path): shutil.rmtree(exp_path)
+
+        os.chdir(f'./detection/yolo/{yolo_ver}')
+
+	infer_command = f'python ./detect.py \
+	--weights {ck_path} \
+	--img {image_size} \
+	--conf {conf_thresh} \
+	--iou {iou_thresh} \
+	--source {test_image_dir} \
+	--augment \
+	--save-txt \
+	--save-conf \
+	--exist-ok \
+	--nosave'
+	os.system(infer_commmand)
 
     os.chdir('../../..')
     prediction_path = os.path.join(exp_path, 'labels')
