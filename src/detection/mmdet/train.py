@@ -32,13 +32,13 @@ def train(folds, epochs=25, cfg_path=Cfg.cfg_path):
         cfg.total_epochs = epochs
         cfg.runner['max_epochs'] = epochs
         #----for google colab
-        if WORKING_BASE == '/content':
+        #if WORKING_BASE == '/content':
 
-            cfg.data_root = cfg.data_root.replace('/kaggle/tmp', DATA_BASE)
-            cfg.data.train.data_root = cfg.data.train.data_root.replace('/kaggle/tmp', DATA_BASE)
-            cfg.data.val.data_root = cfg.data.val.data_root.replace('/kaggle/tmp', DATA_BASE)
-            cfg.data.test.data_root = cfg.data.test.data_root.replace('/kaggle/tmp', DATA_BASE)
-            cfg.load_from = cfg.load_from.replace('/kaggle/input', INPUT_BASE)            
+        #    cfg.data_root = cfg.data_root.replace('/kaggle/tmp', DATA_BASE)
+        #    cfg.data.train.data_root = cfg.data.train.data_root.replace('/kaggle/tmp', DATA_BASE)
+        #    cfg.data.val.data_root = cfg.data.val.data_root.replace('/kaggle/tmp', DATA_BASE)
+        #    cfg.data.test.data_root = cfg.data.test.data_root.replace('/kaggle/tmp', DATA_BASE)
+        #    cfg.load_from = cfg.load_from.replace('/kaggle/input', INPUT_BASE)            
 
         datasets = build_dataset([cfg.data.train])
         model = build_detector(cfg.model)
@@ -50,7 +50,7 @@ def train(folds, epochs=25, cfg_path=Cfg.cfg_path):
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weight', type=str, default='yolov5x')
+    parser.add_argument('--cfg-path', type=str, default='')
     parser.add_argument('--folds', type=str, nargs='+', default=[0, 1, 2, 3, 4], help='folds for training, i.e. 0 or 0,1,2,3,4')
     parser.add_argument('--epochs', type=int, default=35)
     parser.add_argument('--image-size', type=int, default=512)
