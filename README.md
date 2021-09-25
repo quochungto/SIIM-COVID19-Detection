@@ -86,7 +86,7 @@ $ ./download_datasets.sh
 ```
 The downloaded datasets will be placed in directory ```./dataset```, including:
 
-- ```4-june-2021``` fold split data for the train dataset using Stratified K Fold
+- ```fold-split-siim``` fold split data for the train dataset using Stratified K Fold
 - ```1024x1024-png-siim``` competition train dataset
 - ```metadatasets-siim``` metadata for the train dataset
 - ```image-level-psuedo-label-metadata-siim``` metadata for the pseudo label datasets
@@ -100,13 +100,13 @@ $ cd ./src
 ```
 ### 4.1. Yolo variants
 ### 4.1.1. Train
-Train detectors including ```yolov5s, yolov5m, yolov5l, yolov5x, yolov5s6, yolov5m6, yolov5l6, yolov5x6, yolotrs```\
-All checkpoints will be saved at ```./result/yolo/checkpoints```
+Train detectors including ```yolov5s, yolov5m, yolov5l, yolov5x, yolov5s6, yolov5m6, yolov5l6, yolov5x6, yolotrs```
 ```
 # Train a Yolo-Transfomer-s for 3 epochs on folds 0 and 1
 $ python ./detection/yolo/train.py --weight yolotrs --folds 0,1 --img 640 --batch 16
 ```
-To train on both train data and pseudo-labeled data, add flag ```--pseduo``` to the end of the above command.
+To train on both train data and pseudo-labeled data, add flag ```--pseduo path/to/csv``` to the end of the above command.
+All checkpoints will be saved at ```./result/yolo/checkpoints```
 ### 4.1.2. Predict
 ```
 $ python ./detection/yolo/infer.py \
@@ -116,18 +116,20 @@ $ --iou 0.5 \                               # box fusion iou threshold
 $ --conf 0.0001 \                           # box fusion skip box threshold
 $ --mode remote \                           # 'local' mode for evaluating on validation dataset,
                                               'remote' mode for predicting on test dataset
+                                              'pseudo' mode for predicting on external datasets
 $ --image 614 \
 $ --batch 32
 ```
+Ouput .csv files will be saved at ```./result/yolo/submit```
 
 ### 4.2 VFNet
 ### 4.2.1. Train
-Train detectors including ```vfnetr50, vfnetr101``` with image-size 512\
-All checkpoints will be saved at ```./result/mmdet/checkpoints```
+Train detectors including ```vfnetr50, vfnetr101```
 ```
 # Train a VFNetr50 for 3 epochs on folds 0 and 1
 $ python ./detection/mmdet/train.py --weight vfnetr50 --folds 0,1 --img 640 --batch 16
 ```
+All checkpoints will be saved at ```./result/mmdet/checkpoints```
 ### 4.2.2. Predict
 ```
 $ python ./detection/yolo/infer.py \
@@ -140,11 +142,36 @@ $ --mode remote \                           # 'local' mode for evaluating on val
 $ --image 614 \
 $ --batch 32
 ```
+Ouput .csv files will be saved at ```./result/mmdet/submit```
 
 ## 5. Generate pseudo labels
+### 5.1. Predict
 ```
-$ python ./detection/make_pseudo.py
+$ python ./detection/yolo/infer.py \
+$ -ck ../result/mmdet/checkpoints/best0.pt \ # paths to model checkpoints
+$     ../result/mmdet/checkpoints/best1.pt \
+$ --iou 0.5 \                                # box fusion iou threshold 
+$ --conf 0.0001 \                            # box fusion skip box threshold
+$ --mode pseudo \                            # 'local' mode for evaluating on validation dataset,
+                                               'remote' mode for predicting on test dataset
+                                               'pseudo' mode for predicting on external datasets
+$ --image 614 \
+$ --batch 32
 ```
+Ouput .csv files will be saved at ```./result/pseudo/predict```
+
+### 5.2. Hard-label data
+```
+$ python ./detection/make_pseudo.py \
+$ -paths ../result/best0.csv \ # paths to predicted csv files
+$        ../result/best1.csv \
+$ -ws 2 1 \                    # ensemble weights in same order as -paths
+$ --iou 0.6 \                  # box fusion iou threshold
+$ --conf 0.001 \               # box fusion skip box threshold
+$ --none 0.6 \                 # theshold for hard-labeling images as none-class
+$ --opacity 0.095              # threshold for hard-labeling images as opacity-class
+```
+Ouput .csv files will be saved at ```./result/pseudo/labeled```
 
 ## 6. Ensemble & Post-process & Final submission
 Final submission file will be named ```submission.csv``` and saved at ```.\result\submission```.

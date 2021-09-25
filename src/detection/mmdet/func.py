@@ -111,10 +111,10 @@ def get_df(csv_path=Cfg.csv_path, train=True):
 def make_fold(mode='train-0'):
     if 'train' in mode:
         df = get_df(train=True)
-        df_fold = pd.read_csv(os.path.join(INPUT_BASE, '4-june-2021/2021-06-14/data/siim-covid19-detection/df_fold_rand830.csv'))
+        df_fold = pd.read_csv('../dataset/fold-split-siim/df_fold.csv'))
         
         df = pd.merge(df_fold, df, left_on='study_id', right_on='id1', how='right')
-        duplicate = read_list_from_file('../dataset/4-june-2021/2021-06-14/data/siim-covid19-detection/duplicate.txt')
+        duplicate = read_list_from_file('../dataset/fold-split-siim/duplicate.txt')
         df = df[~df['id1'].isin(duplicate)]
 
         #---

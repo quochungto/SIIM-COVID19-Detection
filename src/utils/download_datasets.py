@@ -18,7 +18,7 @@ def main():
     parser.add_argument('-q', action='store_true', help='suppress verbose output')
     opt = parser.parse_args()
     download_kaggle_datasets([
-                            'quochungto/4-june-2021', 
+                            'quochungto/fold-split-siim',
                             'quochungto/1024x1024-png-siim',
                             'quochungto/metadatasets-siim',
                             'quochungto/image-level-psuedo-label-metadata-siim',

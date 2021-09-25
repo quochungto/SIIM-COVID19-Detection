@@ -13,8 +13,8 @@ class Config:
     csv_path = '../dataset/meta.csv'
     ext = '.png'
 
-    fold_path = '../dataset/4-june-2021/2021-06-14/data/siim-covid19-detection/df_fold_rand830.csv'
-    duplicate_path = '../dataset/4-june-2021/2021-06-14/data/siim-covid19-detection/duplicate.txt'
+    fold_path = '../dataset/fold-split-siim/df_fold.csv'
+    duplicate_path = '../dataset/fold-split-siim/duplicate.txt'
 
     yaml_data_path = './detection/yolo/data/data.yaml'
     yaml_hyp_path = './detection/yolo/data/hyp.yaml'
