@@ -150,12 +150,14 @@ $ ./make_pseudo.sh
 Final submission file will be named ```submission.csv``` and saved at ```.\result\submission```.
 ```
 $ python post_processing/postprocess.py \
-$ -study ../result/submit/study/best0.csv ../result/submit/study/best1.csv \ # path to study-level csv files
-$ -image ../result/submit/image/best0.csv ../result/submit/image/best1.csv \ # path to image-level csv files
-$ -sw 1 2 \                                                                  # study-level ensemble weights
-$ -iw 1 1 \                                                                  # image-level ensemble weights
-$ -iou 0.6 \                                                                 # box fusion iou threshold
-$ -conf 0.001                                                                # box fusion skip box threshold
+$ -study ../result/submit/study/best0.csv \ # path to study-level csv files
+$        ../result/submit/study/best1.csv \	
+$ -image ../result/submit/image/best0.csv \ # path to image-level csv files
+$        ../result/submit/image/best1.csv \
+$ -sw 1 2 \                                 # study-level ensemble weights in same order as -study
+$ -iw 1 1 \                                 # image-level ensemble weights in same order as -image
+$ --iou 0.6 \                               # box fusion iou threshold
+$ --conf 0.001                              # box fusion skip box threshold
 ```
 
 ## 7. Softwares & Resources
