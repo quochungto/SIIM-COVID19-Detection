@@ -140,7 +140,7 @@ def parse_opt():
     parser.add_argument('--batch-size', type=int, default=16)
     parser.add_argument('--iou-thr', type=float, default=0.5)
     parser.add_argument('--conf-thr', type=float, default=0.001)
-    parser.add_argument('--mode', type=str, default='local')
+    parser.add_argument('--mode', type=str, default='remote')
     parser.add_argument('--device', default=0, help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
 
     return parser.parse_args()

@@ -47,7 +47,7 @@ Stratified K Fold by StudyID
 ### 1.5. Pseudo labels
 
 **Datasets**: Public test set + BIMCV + RICORD
-- For BIMCV, the dataset contains a lot of images which are taken for the left/right side of human body. In order to reduce noise, my teammate @joven1997 and I manually removed them from the dataset. And since both training and test data in this competition are drawn from this dataset, to avoid leakage in validation, I removed all of the duplicate images and images that have the same StudyID with these duplicates.
+- For BIMCV, the dataset contains a lot of images which are taken for the left/right side of human body. In order to reduce noise, we manually removed them from the dataset. And since both training and test data in this competition are drawn from this dataset, to avoid leakage in validation, we removed all of the duplicate images and images that have the same StudyID with these duplicates.
 
 **Making pseudo labels**
 - Label images with `none_probability > 0.6` as none class images
@@ -81,7 +81,7 @@ $ pip install -r requirements.txt
 ## 3. Dataset
 All required datasets will be automatically downloaded via command:
 ```
-$ python src/utils/download_datasets.py
+$ ./download_datasets.sh
 ```
 The downloaded datasets will be placed in directory ```./dataset```, including:
 
@@ -93,35 +93,72 @@ The downloaded datasets will be placed in directory ```./dataset```, including:
 - ```covid19-posi-dump-siim``` BIMCV COVID-19 dataset
 
 ## 4. Train models
+Navigate your working directory into ```./src```
+```
+$ cd ./src
+```
 ### 4.1. Yolo variants
-Train detectors including ```yolov5x, yolov5l6, yolov5x6, yolotrs``` with image-size 512\
-All checkpoints will be saved at ```./result/yolo/checkpoints```\
-```$ cd ./src```\
-```$ ./yolo_train.sh [detector] [image_size]```
+### 4.1.1. Train
+Train detectors including ```yolov5s, yolov5m, yolov5l, yolov5x, yolov5s6, yolov5m6, yolov5l6, yolov5x6, yolotrs```\
+All checkpoints will be saved at ```./result/yolo/checkpoints```
+```
+# Train a Yolo-Transfomer-s for 3 epochs on folds 0 and 1
+$ python ./detection/yolo/train.py --weight yolotrs --folds 0,1 --img 640 --batch 16
+```
+To train on both train data and pseudo-labeled data, add flag ```--pseduo``` to the end of the above command.
+### 4.1.2. Predict
+```
+$ python ./detection/yolo/infer.py \
+$ -ck ../result/yolo/checkpoints/best0.pt \ # paths to model checkpoints
+$     ../result/yolo/checkpoints/best1.pt \
+$ --iou 0.5 \                               # box fusion iou threshold 
+$ --conf 0.0001 \                           # box fusion skip box threshold
+$ --mode remote \                           # 'local' mode for evaluating on validation dataset,
+                                              'remote' mode for predicting on test dataset
+$ --image 614 \
+$ --batch 32
+```
 
 ### 4.2 VFNet
+### 4.2.1. Train
 Train detectors including ```vfnetr50, vfnetr101``` with image-size 512\
-All checkpoints will be saved at ```./result/mmdet/checkpoints```\
-```$ cd ./src```\
-```$ ./vfnet_train.sh```
+All checkpoints will be saved at ```./result/mmdet/checkpoints```
+```
+# Train a VFNetr50 for 3 epochs on folds 0 and 1
+$ python ./detection/mmdet/train.py --weight vfnetr50 --folds 0,1 --img 640 --batch 16
+```
+### 4.2.2. Predict
+```
+$ python ./detection/yolo/infer.py \
+$ -ck ../result/mmdet/checkpoints/best0.pt \ # paths to model checkpoints
+$     ../result/mmdet/checkpoints/best1.pt \
+$ --iou 0.5 \                               # box fusion iou threshold 
+$ --conf 0.0001 \                           # box fusion skip box threshold
+$ --mode remote \                           # 'local' mode for evaluating on validation dataset,
+                                              'remote' mode for predicting on test dataset
+$ --image 614 \
+$ --batch 32
+```
 
 ## 5. Generate pseudo labels
-Train detectors including ```yolov5x, yolov5l6, yolov5x6, yolotrs``` with image-size 512\
-```$ cd ./src```\
-```$ $ make_pseudo.sh```
+Train detectors including ```yolov5x, yolov5l6, yolov5x6, yolotrs```.
+```
+$ ./make_pseudo.sh
+```
 
-## 6. Train pseudo label models
-Train detectors including ```yolov6x, yolov5l6, yolov5x6, yolotrs``` on pseudo-labeled data with image-size 512\
-All checkpoints will be saved at ```./result/pseudo/checkpoints```\
-```$ cd ./src```\
-```$ $ pseudo_train.sh [detector]```
+## 6. Ensemble & Post-process & Final submission
+Final submission file will be named ```submission.csv``` and saved at ```.\result\submission```.
+```
+$ python post_processing/postprocess.py \
+$ -study ../result/submit/study/best0.csv ../result/submit/study/best1.csv \ # path to study-level csv files
+$ -image ../result/submit/image/best0.csv ../result/submit/image/best1.csv \ # path to image-level csv files
+$ -sw 1 2 \                                                                  # study-level ensemble weights
+$ -iw 1 1 \                                                                  # image-level ensemble weights
+$ -iou 0.6 \                                                                 # box fusion iou threshold
+$ -conf 0.001                                                                # box fusion skip box threshold
+```
 
-## 7. Ensemble & Post-process & Final submission
-Final submission file will be named ```submission.csv``` and saved at ```.\result\submission```\
-```$ cd ./src```\
-```$ ./infer.sh```
-
-## 8. Softwares & Resources
+## 7. Softwares & Resources
 [Pytorch](https://github.com/pytorch/pytorch)\
 [Albumentations](https://github.com/albumentations-team/albumentations)\
 [YoloV5](https://github.com/ultralytics/yolov5)\
