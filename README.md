@@ -8,22 +8,22 @@ This documentation outlines how to reproduce Detection part result of the 11th p
 
 Below is the overview for Detection part solution
 
-**Final result**
+### 1.1. Final result
 
 | Category | Public LB (1/6 mAP) | Private LB (1/6 mAP)|
 | --- | --- | --- |
 | none | 0.134 | -- |
 | opacity | 0.100 | -- |
 
-**Cross-validation**
+### 1.2. Cross-validation
 
 Stratified K Fold by StudyID
 
-**None class prediction**
+### 1.3. None-class prediction
 
 `none_probbility = np.prod(1 - box_conf_i)`
 
-**Modeling**
+### 1.4. Training models
 
 **Detectors trained with competition train data only**
 
@@ -36,7 +36,7 @@ Stratified K Fold by StudyID
 | Yolov5l6 | 512 | 8 | 35 | Y | 0.5 | 0.001 | 0.51650 | 0.78190 |
 | Yolov5x6 | 512 | 8 | 35 | Y | 0.5 | 0.001 | 0.51754 | 0.77820 |
 
-\*: trained with different hyperparameter config
+<sub>\*: trained with different hyperparameter config<sub>
 
 **Detectors trained with pseudo data**
 
@@ -44,31 +44,32 @@ Stratified K Fold by StudyID
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Yolov5x | 512| 8 | 50 | Y | 0.5 | 0.001 | 0.53870 | 0.79028 |
 
-**Pseudo labels - training process**
+### 1.5. Pseudo labels
 
-Datasets: Public test set + BIMCV + RICORD
+**Datasets**: Public test set + BIMCV + RICORD
 - For BIMCV, the dataset contains a lot of images which are taken for the left/right side of human body. In order to reduce noise, my teammate @joven1997 and I manually removed them from the dataset. And since both training and test data in this competition are drawn from this dataset, to avoid leakage in validation, I removed all of the duplicate images and images that have the same StudyID with these duplicates.
 
-Making pseudo labels:
+**Making pseudo labels**
 - Label images with `none_probability > 0.6` as none class images
 - For those have `none_probability <= 0.6`, keep boxes with confident > 0.095
 These thresholds are chosen in order to maximize the f1 score.
 
-Training:
+**Training**
 All datasets are merged together and used to train with the same procedure as without pseudo data.
 
-**Post-processing**	
+### 1.6. Post-processing
 
 - Weighted boxes fusion with `iou_thr=0.6` and `conf_thr=0.0001` as boxes fusion method
 - `box_conf = box_conf**0.84 * (1 - none_probability)**0.16`
 - `none_probability = none_probability*0.5 + negative_probability*0.5`
 - `negative_probability = none_probability*0.3 + negative_probability*0.7`
 
-**Final Submission**
+### 1.7. Final submission
 
 For final submission, we used Yolotrs-384 + Yolov5x-640 + Yolov5x-512-pseudo labels, all with TTA.
 
 ## 2. Installation
+- Ubuntu 20.04.01 LTS
 - Python 3.8
 - python packages are detailed separately in [requirements](https://github.com/dungnb1333/SIIM-COVID19-Detection/blob/main/requirements.txt)
 ```
@@ -78,41 +79,51 @@ $ pip install -r requirements.txt
 ```
 
 ## 3. Dataset
-To automatically download all the required datasets, run command:
+All required datasets will be automatically downloaded via command:
 ```
 $ python src/utils/download_datasets.py
 ```
-The downloaded datasets will be placed in directory ```./dataset```
+The downloaded datasets will be placed in directory ```./dataset```, including:
 
-The datasets include:
-
-
-* ```quochungto/4-june-2021``` fold split data for the train dataset using Stratified K Fold
-
-* ```1024x1024-png-siim``` competition train dataset
-
-* ```metadatasets-siim``` metadata for the train dataset
-
-* ```image-level-psuedo-label-metadata-siim``` metadata for the pseudo label datasets
-
-* ```files-for-psuedo-label-siim```
-
-* ```ricord-covid19-xray-positive-tests``` RICORD COVID-19 X-ray positive tests dataset
-
-* ```quochungto/covid19-posi-dump-siim``` BIMCV COVID-19 dataset
+- ```4-june-2021``` fold split data for the train dataset using Stratified K Fold
+- ```1024x1024-png-siim``` competition train dataset
+- ```metadatasets-siim``` metadata for the train dataset
+- ```image-level-psuedo-label-metadata-siim``` metadata for the pseudo label datasets
+- ```ricord-covid19-xray-positive-tests``` RICORD COVID-19 X-ray positive tests dataset
+- ```covid19-posi-dump-siim``` BIMCV COVID-19 dataset
 
 ## 4. Train models
 ### 4.1. Yolo variants
+Train detectors including ```yolov5x, yolov5l6, yolov5x6, yolotrs``` with image-size 512\
+All checkpoints will be saved at ```./result/yolo/checkpoints```\
+```$ cd ./src```\
+```$ ./yolo_train.sh [detector] [image_size]```
 
 ### 4.2 VFNet
+Train detectors including ```vfnetr50, vfnetr101``` with image-size 512\
+All checkpoints will be saved at ```./result/mmdet/checkpoints```\
+```$ cd ./src```\
+```$ ./vfnet_train.sh```
 
-## 5. Making pseudo labels
+## 5. Generate pseudo labels
+Train detectors including ```yolov5x, yolov5l6, yolov5x6, yolotrs``` with image-size 512\
+```$ cd ./src```\
+```$ $ make_pseudo.sh```
 
-## 6. Inference
+## 6. Train pseudo label models
+Train detectors including ```yolov6x, yolov5l6, yolov5x6, yolotrs``` on pseudo-labeled data with image-size 512\
+All checkpoints will be saved at ```./result/pseudo/checkpoints```\
+```$ cd ./src```\
+```$ $ pseudo_train.sh [detector]```
 
-## 7. Softwares & Resources
-[Pytorch](https://github.com/pytorch/pytorch)
-[Albumentations](https://github.com/albumentations-team/albumentations)
-[YoloV5](https://github.com/ultralytics/yolov5)
-[MMDetection](https://github.com/open-mmlab/mmdetection)
+## 7. Ensemble & Post-process & Final submission
+Final submission file will be named ```submission.csv``` and saved at ```.\result\submission```\
+```$ cd ./src```\
+```$ ./infer.sh```
+
+## 8. Softwares & Resources
+[Pytorch](https://github.com/pytorch/pytorch)\
+[Albumentations](https://github.com/albumentations-team/albumentations)\
+[YoloV5](https://github.com/ultralytics/yolov5)\
+[MMDetection](https://github.com/open-mmlab/mmdetection)\
 [Weighted Boxes Fusion](https://github.com/ZFTurbo/Weighted-Boxes-Fusion)
