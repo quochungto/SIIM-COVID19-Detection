@@ -74,7 +74,7 @@ For final submission, we used Yolotrs-384 + Yolov5x-640 + Yolov5x-512-pseudo lab
 - Python 3.8
 - python packages are detailed separately in [requirements](https://github.com/dungnb1333/SIIM-COVID19-Detection/blob/main/requirements.txt)
 ```
-$ vitualenv --python=python3.8 envs
+$ virtualenv --python=python3.8 envs
 $ source envs/bin/activate
 $ pip install -r requirements.txt
 ```
