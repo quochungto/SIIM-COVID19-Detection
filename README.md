@@ -10,7 +10,7 @@ Below is the overview for Detection part solution
 
 ### 1.1. Final result
 
-| Category | Public LB (1/6 mAP) | Private LB (1/6 mAP)|
+| Category | Public LB (1/6 mAP@.5) | Private LB (1/6 mAP@.5)|
 | --- | --- | --- |
 | none | 0.134 | -- |
 | opacity | 0.100 | -- |
@@ -27,7 +27,7 @@ Stratified K Fold by StudyID
 
 **Detectors trained with competition train data only**
 
-| backbone | image size | batch size | epochs | TTA | iou | conf | CV opacity (mAP) | CV none (mAP) |
+| backbone | image size | batch size | epochs | TTA | iou | conf | CV opacity (mAP@.5) | CV none (mAP@.5) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | VFNetr50| 640 | 8 | 35 | Y | 0.5 | 0.001 | 0.48358 | 0.23121 |
 | Yolov5m\* | 1024 | 8 | 35 | Y | 0.5 | 0.001 | 0.48148 | 0.76216 |
@@ -35,12 +35,13 @@ Stratified K Fold by StudyID
 | Yolov5x | 512 | 8 | 35 | Y | 0.5 | 0.001 | 0.51690 | 0.78192 |
 | Yolov5l6 | 512 | 8 | 35 | Y | 0.5 | 0.001 | 0.51650 | 0.78190 |
 | Yolov5x6 | 512 | 8 | 35 | Y | 0.5 | 0.001 | 0.51754 | 0.77820 |
+| YoloTrs | 512 | 32 | 40 | Y | 0.5 | 0.001 | 0.51343 | 0.776458 |
 
 <sub>\*: trained with different hyperparameter config<sub>
 
 **Detectors trained with pseudo data**
 
-| backbone | image size | batch size | epochs | TTA | iou | conf | CV opacity (mAP) | CV none (mAP) |
+| backbone | image size | batch size | epochs | TTA | iou | conf | CV opacity (mAP@.5) | CV none (mAP@.5) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Yolov5x | 512| 8 | 50 | Y | 0.5 | 0.001 | 0.53870 | 0.79028 |
 
@@ -141,18 +142,17 @@ $ --batch 32
 ```
 
 ## 5. Generate pseudo labels
-Train detectors including ```yolov5x, yolov5l6, yolov5x6, yolotrs```.
 ```
-$ ./make_pseudo.sh
+$ python ./detection/make_pseudo.py
 ```
 
 ## 6. Ensemble & Post-process & Final submission
 Final submission file will be named ```submission.csv``` and saved at ```.\result\submission```.
 ```
-$ python post_processing/postprocess.py \
-$ -study ../result/submit/study/best0.csv \ # path to study-level csv files
+$ python ./post_processing/postprocess.py \
+$ -study ../result/submit/study/best0.csv \ # paths to study-level csv files
 $        ../result/submit/study/best1.csv \	
-$ -image ../result/submit/image/best0.csv \ # path to image-level csv files
+$ -image ../result/submit/image/best0.csv \ # paths to image-level csv files
 $        ../result/submit/image/best1.csv \
 $ -sw 1 2 \                                 # study-level ensemble weights in same order as -study
 $ -iw 1 1 \                                 # image-level ensemble weights in same order as -image
