@@ -1,6 +1,13 @@
-# 11th place Solution for SIIM COVID 19 Detection Challenge - Detection Part
+# 11th place Solution for SIIM-FISABIO-RSNA COVID-19 Detection Challenge - Detection Part
+This documentation outlines how to reproduce Detection part result of the 11th place solution by the "∫ℳΓϒℏ" team for the [COVID19 Detection Competition](https://www.kaggle.com/c/siim-covid19-detection/overview) on Kaggle hosted by SIIM-FISABIO-RSNA. 
 
-## Solution Overview
+[Code for reproducing Classification part result](https://github.com/ChenYingpeng/pl-siim-covid19-detection)
+
+## 1. Solution Overview
+[Solution overview for Classification part](https://www.kaggle.com/c/siim-covid19-detection/discussion/263701)
+
+Below is the overview for Detection part solution
+
 **Final result**
 
 | Category | Public LB (1/6 mAP) | Private LB (1/6 mAP)|
@@ -60,3 +67,52 @@ All datasets are merged together and used to train with the same procedure as wi
 **Final Submission**
 
 For final submission, we used Yolotrs-384 + Yolov5x-640 + Yolov5x-512-pseudo labels, all with TTA.
+
+## 2. Installation
+- Python 3.8
+- python packages are detailed separately in [requirements](https://github.com/dungnb1333/SIIM-COVID19-Detection/blob/main/requirements.txt)
+```
+$ vitualenv --python=python3.8 envs
+$ source envs/bin/activate
+$ pip install -r requirements.txt
+```
+
+## 3. Dataset
+To automatically download all the required datasets, run command:
+```
+$ python src/utils/download_datasets.py
+```
+The downloaded datasets will be placed in directory ```./dataset```
+
+The datasets include:
+
+
+* ```quochungto/4-june-2021``` fold split data for the train dataset using Stratified K Fold
+
+* ```1024x1024-png-siim``` competition train dataset
+
+* ```metadatasets-siim``` metadata for the train dataset
+
+* ```image-level-psuedo-label-metadata-siim``` metadata for the pseudo label datasets
+
+* ```files-for-psuedo-label-siim```
+
+* ```ricord-covid19-xray-positive-tests``` RICORD COVID-19 X-ray positive tests dataset
+
+* ```quochungto/covid19-posi-dump-siim``` BIMCV COVID-19 dataset
+
+## 4. Train models
+### 4.1. Yolo variants
+
+### 4.2 VFNet
+
+## 5. Making pseudo labels
+
+## 6. Inference
+
+## 7. Softwares & Resources
+[Pytorch](https://github.com/pytorch/pytorch)
+[Albumentations](https://github.com/albumentations-team/albumentations)
+[YoloV5](https://github.com/ultralytics/yolov5)
+[MMDetection](https://github.com/open-mmlab/mmdetection)
+[Weighted Boxes Fusion](https://github.com/ZFTurbo/Weighted-Boxes-Fusion)
