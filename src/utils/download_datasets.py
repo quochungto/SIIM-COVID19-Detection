@@ -10,13 +10,7 @@ def download_kaggle_datasets(datasets, force=False, quiet=False):
         dset_name = os.path.split(dset)[-1]
         save_path = os.path.join('../dataset', dset_name)
         if not os.path.exists(save_path) or force:
-            #os.makedirs(save_path, exist_ok=True)
-            #os.chdir(save_path)
-            #print('downloading %s ... '%dset_name, end='', flush=True)
             kaggle.api.dataset_download_files(dset, path=save_path, force=force, quiet=quiet, unzip=True)
-            #print('Done!')
-            #os.chdir('../..')
-
 
 def main():
     parser = argparse.ArgumentParser()
