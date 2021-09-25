@@ -66,9 +66,6 @@ def parse_opt():
     parser.add_argument('--image-size', type=int, default=512)
     parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--pseudo', action='store_true')
-    parser.add_argument('--debug', action='store_true')
-    #parser.add_argument('--infer', action='store_true')
-    parser.add_argument('--redownload', action='store_true')
     parser.add_argument('--device', default=0, help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
 
     return parser.parse_args()
@@ -79,18 +76,11 @@ def main():
     opt = parse_opt()
     
     weight, folds, epochs, \
-    image_size, batch_size, \
-    pseudo, debug, redownload, device = \
+    image_size, batch_size, pseudo, device = \
     opt.weight, opt.folds, opt.epochs, \
-    opt.image_size, opt.batch_size, \
-    opt.pseudo, opt.debug, opt.redownload, opt.device
-    
-    if debug:
-        folds = [0]
-        epochs = 1
+    opt.image_size, opt.batch_size, opt.pseudo, opt.device
 
     yolo_train(folds, epochs, batch_size, image_size, weight=weight, pseudo=pseudo, device=device)
-
 
 if __name__ == '__main__':
     main()

@@ -141,8 +141,6 @@ def parse_opt():
     parser.add_argument('--iou-thr', type=float, default=0.5)
     parser.add_argument('--conf-thr', type=float, default=0.001)
     parser.add_argument('--mode', type=str, default='local')
-    parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--redownload', action='store_true')
     parser.add_argument('--device', default=0, help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
 
     return parser.parse_args()
@@ -153,11 +151,9 @@ def main():
     opt = parse_opt()
     
     ck_paths, image_size, batch_size, \
-    iou, conf, mode, debug, \
-    redownload, device = \
+    iou, conf, mode, device = \
     opt.ck_paths, opt.image_size, opt.batch_size, \
-    opt.iou_thr, opt.conf_thr, opt.mode, opt.debug, \
-    opt.redownload, opt.device
+    opt.iou_thr, opt.conf_thr, opt.mode, opt.device
 
     for ck_path in ck_paths:
         yolo_infer(ck_path,
