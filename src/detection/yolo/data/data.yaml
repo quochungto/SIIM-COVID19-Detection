@@ -1,5 +1,5 @@
 names:
 - opacity
 nc: 1
-train: ../../../../dataset/chest/images/train
-val: ../../../../dataset/chest/images/val
+train: /home/quochungto/personal_projects/siim/dataset/chest/images/train
+val: /home/quochungto/personal_projects/siim/dataset/chest/images/val

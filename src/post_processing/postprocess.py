@@ -15,6 +15,8 @@ import argparse
 import numpy as np
 import pandas as pd
 
+from ensemble_boxes import nms, weighted_boxes_fusion
+
 #from include import *
 from utils.file import Logger
 from utils.him import downsize_boxes, upsize_boxes
@@ -59,11 +61,14 @@ def boxes2str_df(boxes, image_ids=None):
     return pd.DataFrame({'id': image_ids, 'PredictionString': strs})
 
 
-def check_num_boxes_per_image(df=None, csv_path=None):
+def check_num_boxes_per_image(df=None, csv_path=None, filter_rows=True):
     assert df is not None or csv_path is not None
     if df is None:
         df = pd.read_csv(csv_path)
-    df_image = df[df['id'].apply(lambda x: x.endswith('image'))].reset_index(drop=True)
+    if filter_rows:
+        df_image = df[df['id'].apply(lambda x: x.endswith('image'))].reset_index(drop=True)
+    else:
+        df_image = df
     all_boxes = str2boxes_df(df_image, with_none=False)
     all_boxes = [boxes for boxes in all_boxes if len(boxes) > 0 ]
     return np.concatenate(all_boxes).shape[0] / len(df_image)
@@ -87,10 +92,11 @@ def filter_rows(df, mode):
 
 
 def ensemble_image(dfs, df_meta, mode='wbf', \
-        iou_thr=0.5, skip_box_thr=0.001, weights=None):
+        iou_thr=0.5, skip_box_thr=0.001, weights=None, filter_rows=True):
     
-    df_meta = filter_rows(df_meta, mode='image')
-    dfs = [filter_rows(df, mode='image') for df in dfs]
+    if filter_rows:
+        df_meta = filter_rows(df_meta, mode='image')
+        dfs = [filter_rows(df, mode='image') for df in dfs]
     
     image_ids, prediction_strings, all_scores = [], [], []
     num_boxes = 0
