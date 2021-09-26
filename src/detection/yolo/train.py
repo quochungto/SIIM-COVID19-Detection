@@ -6,7 +6,7 @@ import os
 import argparse
 
 # custom
-from utils.common import save_checkpoints
+from utils.common import increment_path
 from utils.torch_common import seed_everything, memory_cleanup
 from global_config import Config
 from func import allocate_files
@@ -26,7 +26,7 @@ def yolo_train(folds, epochs, batch_size, image_size, weight='yolov5x', pseudo_c
         allocate_files(fold,
                         csv_path=Config.csv_path,
                         yaml_path=Config.yaml_data_path,
-                        save_dir='../../../../dataset/chest',
+                        save_dir='../dataset/chest',
                         num_classes=Config.num_classes,
                         class_names=Config.class_names,
                         is_train=True,
@@ -34,8 +34,11 @@ def yolo_train(folds, epochs, batch_size, image_size, weight='yolov5x', pseudo_c
                         duplicate_path=Config.duplicate_path,
                         pseudo_csv_path=pseudo_csv_path)
         print('Done!\n')
-        print('epochs=%d,batch_size=%d,image_size=%d,weight=%s,data_path=%s,hyp_path=%s,device=%s,pseudo=%s'\
-              %(epochs,batch_size,image_size,weight,Config.yaml_data_path,Config.yaml_hyp_path,str(device),pseudo))
+        print('epochs=%d,batch_size=%d,image_size=%d,weight=%s,\
+                data_path=%s,hyp_path=%s,device=%s,pseudo_csv_path=%s'\
+              %(epochs,batch_size,image_size,weight,\
+              Config.yaml_data_path,Config.yaml_hyp_path,str(device),\
+              pseudo_csv_path))
 
         os.chdir(f'./detection/yolo/{yolo_ver}')
         train_command = f'python3 ./train.py \
@@ -43,8 +46,8 @@ def yolo_train(folds, epochs, batch_size, image_size, weight='yolov5x', pseudo_c
         --batch-size {batch_size} \
         --img {image_size} \
         --weights {weight}.pt \
-        --data {"./../../../" + Config.yaml_data_path} \
-        --hyp {"./../../../" + Config.yaml_hyp_path} \
+        --data {os.path.abspath("./../../../" + Config.yaml_data_path)} \
+        --hyp {os.path.abspath("./../../../" + Config.yaml_hyp_path)} \
         --cache'
         if Config.device.type == 'cuda':
             train_command += ' --device {device}'

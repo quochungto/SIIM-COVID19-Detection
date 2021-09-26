@@ -44,17 +44,20 @@ def train(folds, epochs=25, cfg_path=Cfg.cfg_path):
         model = build_detector(cfg.model)
         train_detector(model, datasets, cfg, validate=True, distributed=False)
         print('\n')
-    if BACKEND == 'colab':
+    #if BACKEND == 'colab':
       #return save_checkpoints(os.path.join(WORKING_BASE, 'exps'), '/content/working/drive/siim',prefix='mmdet_detectoRS')
-      return save_checkpoints('exps', '../result/mmdet/checkpoints', prefix='mmdet_detectoRS')
+      #return save_checkpoints('exps', '../result/mmdet/checkpoints', prefix='mmdet_detectoRS')
+    return shutil.move()
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg-path', type=str, default='')
-    parser.add_argument('--folds', type=str, nargs='+', default=[0, 1, 2, 3, 4], help='folds for training, i.e. 0 or 0,1,2,3,4')
+    parser.add_argument('--cfg-path', type=str, \
+            default=os.path.abspath('./detection/mmdet/model_configs/vfnetr50_cfg.py'))
+    parser.add_argument('--folds', type=str, nargs='+', \
+            default=[0, 1, 2, 3, 4], help='folds for training, i.e. 0 or 0,1,2,3,4')
     parser.add_argument('--epochs', type=int, default=35)
-    parser.add_argument('--image-size', type=int, default=512)
-    parser.add_argument('--batch_size', type=int, default=8)
+    #parser.add_argument('--image-size', type=int, default=512)
+    #parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--pseudo', action='store_true')
     parser.add_argument('--device', default=0, help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
 
@@ -62,12 +65,8 @@ def parse_opt():
 
 def main():
     seed_everything(Cfg.seed)
-
-    #cfg_path = os.path.join(INPUT_BASE, 'mmdetection-configs-siim', 'vfnetr101_cfg.py')
-
     opt = parse_opt()
-    
-    train(opt.folds, epochs=opt.epochs, cfg_path=cfg_path)
+    train(opt.folds, epochs=opt.epochs, cfg_path=opt.cfg_path)
 
 if __name__ == '__main__':
     main()

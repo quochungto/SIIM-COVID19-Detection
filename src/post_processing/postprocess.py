@@ -417,7 +417,8 @@ def main():
 
     df_sub = pd.concat([df_study, df_image], axis=0, ignore_index=True)
     df_sub = df_sub[['id', 'PredictionString']]
-    df_sub.to_csv('../result/submission/submission.csv', index=False)
+    os.makedirs('../result/submission', exist_ok=True)
+    df_sub.to_csv(increment_path('../result/submission/submission', exist_ok=False) + '.csv', index=False)
 
     # logging
     log.write('Number of boxes per image on average: %d\n'%check_num_boxes_per_image(df=df_sub))
