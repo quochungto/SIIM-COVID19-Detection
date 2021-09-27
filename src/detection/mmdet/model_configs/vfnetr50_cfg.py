@@ -1,13 +1,17 @@
+import sys
+sys.path.append('.')
+import os
+from setting import DATA_BASE
 dataset_type = 'CocoDataset'
-data_root = '/kaggle/tmp/coco/'
+data_root = os.path.join(DATA_BASE, 'coco')
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
-albu_train_transforms = [
-    dict(type='ShiftScaleRotate', shift_limit=0.0625,
-         scale_limit=0.1, rotate_limit=15, p=0.2),
-    dict(type='RandomBrightnessContrast', brightness_limit=0.2,
-         contrast_limit=0.2, p=0.3),
-    dict(type='IAAAffine', shear=(-10.0, 10.0), p=0.4),
+#albu_train_transforms = [
+#    dict(type='ShiftScaleRotate', shift_limit=0.0625,
+#         scale_limit=0.1, rotate_limit=15, p=0.2),
+#    dict(type='RandomBrightnessContrast', brightness_limit=0.2,
+#         contrast_limit=0.2, p=0.3),
+#    #dict(type='IAAAffine', shear=(-10.0, 10.0), p=0.4),
 #    dict(
 #        type="OneOf",
 #        transforms=[
@@ -17,43 +21,43 @@ albu_train_transforms = [
 #        ],
 #        p=0.2,
 #    ),
-#albu_train_transforms = [
-#    dict(
-#        type='ShiftScaleRotate',
-#        shift_limit=0.0625,
-#        scale_limit=0.0,
-#        rotate_limit=30,
-#        interpolation=2,
-#        p=0.5),
-#    dict(
-#        type='RandomBrightnessContrast',
-#        brightness_limit=[0.1, 0.3],
-#        contrast_limit=[0.1, 0.3],
-#        p=0.2),
-#    dict(
-#        type='OneOf',
-#        transforms=[
-#            dict(
-#                type='RGBShift',
-#                r_shift_limit=10,
-#                g_shift_limit=10,
-#                b_shift_limit=10,
-#                p=1.0),
-#            dict(
-#                type='HueSaturationValue',
-#                hue_shift_limit=20,
-#                sat_shift_limit=30,
-#                val_shift_limit=20,
-#                p=1.0)
-#        ],
-#        p=0.1),
-#    dict(
-#        type='OneOf',
-#        transforms=[
-#            dict(type='Blur', blur_limit=3, p=1.0),
-#            dict(type='MedianBlur', blur_limit=3, p=1.0)
-#        ],
-#        p=0.1)
+albu_train_transforms = [
+    dict(
+        type='ShiftScaleRotate',
+        shift_limit=0.0625,
+        scale_limit=0.0,
+        rotate_limit=30,
+        interpolation=2,
+        p=0.5),
+    dict(
+        type='RandomBrightnessContrast',
+        brightness_limit=[0.1, 0.3],
+        contrast_limit=[0.1, 0.3],
+        p=0.2),
+    dict(
+        type='OneOf',
+        transforms=[
+            dict(
+                type='RGBShift',
+                r_shift_limit=10,
+                g_shift_limit=10,
+                b_shift_limit=10,
+                p=1.0),
+            dict(
+                type='HueSaturationValue',
+                hue_shift_limit=20,
+                sat_shift_limit=30,
+                val_shift_limit=20,
+                p=1.0)
+        ],
+        p=0.1),
+    dict(
+        type='OneOf',
+        transforms=[
+            dict(type='Blur', blur_limit=3, p=1.0),
+            dict(type='MedianBlur', blur_limit=3, p=1.0)
+        ],
+        p=0.1)
 ]
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -113,21 +117,21 @@ data = dict(
         img_prefix='images/train2017/',
         pipeline=train_pipeline,
         classes=('opacity',),
-        data_root='/kaggle/tmp/coco/'),
+        data_root=os.path.join(DATA_BASE, 'coco')),
     val=dict(
         type='CocoDataset',
         ann_file='annotations/instances_val2017.json',
         img_prefix='images/val2017/',
         pipeline=test_pipeline,
         classes=('opacity',),
-        data_root='/kaggle/tmp/coco/'),
+        data_root=os.path.join(DATA_BASE, 'coco')),
     test=dict(
         type='CocoDataset',
         ann_file='annotations/instances_test2017.json',
         img_prefix='images/test2017/',
         pipeline=test_pipeline,
         classes=('opacity',),
-        data_root='/kaggle/tmp/coco/'))
+        data_root=os.path.join(DATA_BASE, 'coco'))),
 evaluation = dict(interval=1, metric='bbox')
 optimizer = dict(type='SGD', lr=5e-3, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=None)
@@ -154,7 +158,7 @@ log_config = dict(interval=100, hooks=[dict(type='TextLoggerHook')])
 custom_hooks = [dict(type='NumClassCheckHook')]
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = '/kaggle/input/mmdet-vfnet-pretrained/vfnet_r50_fpn_mdconv_c3-c5_mstrain_2x_coco_20201027pth-6879c318.pth'
+load_from = os.path.join(DATA_BASE, 'mmdet-vfnet-pretrained/vfnet_r50_fpn_mdconv_c3-c5_mstrain_2x_coco_20201027pth-6879c318.pth')
 resume_from = None
 workflow = [('train', 1)]
 model = dict(
@@ -213,4 +217,3 @@ work_dir = './exps'
 total_epochs = 25
 seed = 42
 gpu_ids = range(0, 1)
-

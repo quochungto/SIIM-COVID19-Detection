@@ -26,6 +26,8 @@ def main():
                             'quochungto/files-for-psuedo-label-siim',
                             'raddar/ricord-covid19-xray-positive-tests',
                             'quochungto/covid19-posi-dump-siim',
+                            # mmdet
+                            'vgarshin/mmdet-vfnet-pretrained'
                             ], force=opt.f, quiet=opt.q)
 
     # train dataste

@@ -80,7 +80,7 @@ $ pip install -r requirements.txt
 ```
 
 ## 3. Dataset
-All required datasets will be automatically downloaded via command:
+All required datasets will be automatically downloaded via command
 ```
 $ ./download_datasets.sh
 ```
@@ -92,6 +92,7 @@ The downloaded datasets will be placed in directory ```./dataset```, including:
 - ```image-level-psuedo-label-metadata-siim``` metadata for the pseudo label datasets
 - ```ricord-covid19-xray-positive-tests``` RICORD COVID-19 X-ray positive tests dataset
 - ```covid19-posi-dump-siim``` BIMCV COVID-19 dataset
+- ```mmdet-vfnet-pretrained``` VFNetr50 & VFNetr101 pretrained checkpoints
 
 ## 4. Train models
 Navigate your working directory into ```./src```
@@ -105,8 +106,8 @@ Train detectors including ```yolov5s, yolov5m, yolov5l, yolov5x, yolov5s6, yolov
 # Train a Yolo-Transformer-s for 3 epochs on folds 0 and 1
 $ python ./detection/yolo/train.py --weight yolotrs --folds 0,1 --img 640 --batch 16
 ```
-To train on both train data and pseudo-labeled data, add flag ```--pseduo path/to/csv``` to the end of the above command.
-All checkpoints will be saved at ```./result/yolo/checkpoints```
+To train on both train data and pseudo-labeled data, add flag ```--pseudo path/to/hard/label/csv``` to the end of the above command.
+Checkpoints will be saved at ```./result/yolo/checkpoints```
 ### 4.1.2. Predict
 ```
 $ python ./detection/yolo/infer.py \
@@ -129,7 +130,7 @@ Train detectors including ```vfnetr50, vfnetr101```
 # Train a VFNetr50 for 3 epochs on folds 0 and 1
 $ python ./detection/mmdet/train.py --weight vfnetr50 --folds 0,1 --img 640 --batch 16
 ```
-All checkpoints will be saved at ```./result/mmdet/checkpoints```
+Checkpoints will be saved at ```./result/mmdet/checkpoints```
 ### 4.2.2. Predict
 ```
 $ python ./detection/yolo/infer.py \
@@ -139,8 +140,6 @@ $ --iou 0.5 \                               # box fusion iou threshold
 $ --conf 0.0001 \                           # box fusion skip box threshold
 $ --mode remote \                           # 'local' mode for evaluating on validation dataset,
                                               'remote' mode for predicting on test dataset
-$ --image 614 \
-$ --batch 32
 ```
 Ouput .csv files will be saved at ```./result/mmdet/submit```
 
@@ -158,12 +157,12 @@ $ --mode pseudo \                            # 'local' mode for evaluating on va
 $ --image 614 \
 $ --batch 32
 ```
-Ouput .csv files will be saved at ```./result/pseudo/predict```
+Ouput .csv files will be saved at ```./result/pseudo/prediction/```
 
-### 5.2. Hard-label data
+### 5.2. Ensemble & Hard-label data
 ```
 $ python ./detection/make_pseudo.py \
-$ -paths ../result/best0.csv \ # paths to predicted csv files
+$ -paths ../result/best0.csv \ # paths to predicted csv files to ensemble
 $        ../result/best1.csv \
 $ -ws 2 1 \                    # ensemble weights in same order as -paths
 $ --iou 0.6 \                  # box fusion iou threshold
@@ -171,10 +170,10 @@ $ --conf 0.001 \               # box fusion skip box threshold
 $ --none 0.6 \                 # threshold for hard-labeling images as none-class
 $ --opacity 0.095              # threshold for hard-labeling images as opacity-class
 ```
-Ouput .csv files will be saved at ```./result/pseudo/labeled```
+Ouput .csv files will be saved at ```./result/pseudo/hard_label/```
 
 ## 6. Ensemble & Post-process & Final submission
-Final submission file will be named ```submission.csv``` and saved at ```.\result\submission```.
+Final submission file will be named ```submission.csv``` and saved at ```./result/submission```.
 ```
 $ python ./post_processing/postprocess.py \
 $ -study ../result/submit/study/best0.csv \ # paths to study-level csv files

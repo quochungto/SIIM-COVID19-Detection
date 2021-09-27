@@ -3,6 +3,9 @@ __pycache__/
 siim/
 dataset/*
 logging/
+result/
+src/detection/yolo/yolov5/runs/
+src/detection/yolo/yolotrs/runs/
 note
 *.vim
 *.swp

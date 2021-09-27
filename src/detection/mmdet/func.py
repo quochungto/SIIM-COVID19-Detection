@@ -15,6 +15,10 @@ from collections import defaultdict
 import numpy as np
 import pandas as pd
 
+# custom
+from global_config import Cfg
+from utils.file import read_list_from_file
+
 class Csv2Coco:
     def __init__(self, meta, with_labels=True):
         self.meta = meta
@@ -111,7 +115,7 @@ def get_df(csv_path=Cfg.csv_path, train=True):
 def make_fold(mode='train-0'):
     if 'train' in mode:
         df = get_df(train=True)
-        df_fold = pd.read_csv('../dataset/fold-split-siim/df_fold.csv'))
+        df_fold = pd.read_csv('../dataset/fold-split-siim/df_fold.csv')
         
         df = pd.merge(df_fold, df, left_on='study_id', right_on='id1', how='right')
         duplicate = read_list_from_file('../dataset/fold-split-siim/duplicate.txt')
@@ -123,8 +127,8 @@ def make_fold(mode='train-0'):
         df_valid = df[df['fold'] == fold].reset_index(drop=True)
         
         if Cfg.debug:
-            df_train = df_train[:15]
-            df_valid = df_valid[:15]
+            df_train = df_train[:10]
+            df_valid = df_valid[:10]
 
         return df_train, df_valid
 
@@ -183,14 +187,14 @@ def allocate_files(fold, is_train=True):
         for i, row in tqdm(df_test.iterrows(), total=len(df_test)):
             shutil.copy(row['filepath'], os.path.join(test_dir, row['id'] + '.png'))
 
-    if 'test' in mode:
-        df_test = get_df(train=False)
-        df_test = df_test.reset_index(drop=True)
-        
-        if Cfg.debug:
-            df_test = df_test[:15]
+    #if 'test' in mode:
+    #    df_test = get_df(train=False)
+    #    df_test = df_test.reset_index(drop=True)
+    #    
+    #    if Cfg.debug:
+    #        df_test = df_test[:10]
 
-        return df_test
+    #    return df_test
 
 def get_image_sub(pickle_file_path, df_test, image_size):
     # output [opacity prob x_min y_min x_max y_max]

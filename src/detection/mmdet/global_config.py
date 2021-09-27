@@ -5,7 +5,7 @@ class Cfg:
     num_classes = 1
     class_names  = ['opacity']
 
-    cfg_path = '../dataset/mmdetection-configs-siim/vfnet_cfg.py')
+    cfg_path = '../dataset/mmdetection-configs-siim/vfnetr50_cfg.py'
     ckpt_path = '../result/mmdet/checkpoints'
     
     image_size = 1024
@@ -23,6 +23,6 @@ class Cfg:
     iou_detect = 0.5
     conf_detect = 0.001
   
-    debug = False
+    debug = True
     
     save_coco_path = '../dataset/coco'
