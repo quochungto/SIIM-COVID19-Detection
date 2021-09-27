@@ -128,7 +128,7 @@ Ouput .csv files will be saved at ```./result/yolo/submit```
 Train detectors including ```vfnetr50, vfnetr101```
 ```
 # Train a VFNetr50 for 3 epochs on folds 0 and 1
-$ python ./detection/mmdet/train.py --weight vfnetr50 --folds 0,1 --img 640 --batch 16
+$ python ./detection/mmdet/train.py --weight vfnetr50 --folds 0,1
 ```
 Checkpoints will be saved at ```./result/mmdet/checkpoints```
 ### 4.2.2. Predict
