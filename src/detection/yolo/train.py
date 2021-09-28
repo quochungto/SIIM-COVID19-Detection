@@ -3,6 +3,7 @@ sys.path.append('.')
 
 # stdlib
 import os
+import shutil
 import argparse
 
 # custom
@@ -14,9 +15,10 @@ from func import allocate_files
 def yolo_train(folds, epochs, batch_size, image_size, weight='yolov5x', pseudo_csv_path=None, device=0):
     result_path = '../result/yolo/checkpoints'
     output_paths = []
-    #pseudo_csv_path = '../dataset/pseudo.csv' if pseudo else None
     yolo_ver = 'yolov5' if 'yolov5' in weight else 'yolotrs' if 'yolotrs' in weight else None
-    assert yolo_ver is not None
+    assert yolo_ver is not None, 'invalid --weight argument'
+    if weight == 'yolotrs':
+        weight = os.path.abspath(f'../dataset/yolotr-pretrained/{weight}')
 
     for fold in folds:
         memory_cleanup()
@@ -57,19 +59,20 @@ def yolo_train(folds, epochs, batch_size, image_size, weight='yolov5x', pseudo_c
         exp_path = f'./detection/yolo/{yolo_ver}/runs/train/exp'
         prefix = '%s_fold%d_bsize%d_%d_%d'%(yolo_ver, fold, batch_size, image_size, epochs)
         if pseudo_csv_path is not None: prefix += '_pseudo'
-        logging_path = increment_path(f'../logging/yolo/train/{prefix}', exist_ok=False, sep='_')
-        shutil.move(exp_path, logging_path)
-        weight_path = os.path.join(logging_path, 'weight/best.pt')
+        weight_path = os.path.join(exp_path, 'weights/best.pt')
+        os.makedirs(result_path, exist_ok=True)
         prediction_path = increment_path(os.path.join(result_path, prefix), exist_ok=False, sep='_') + '.pt'
         output_paths.append(shutil.move(weight_path, prediction_path))
-        print('result saved to %s\n'%output_paths[-1])
+        logging_path = increment_path(f'../logging/yolo/train/{prefix}', exist_ok=False, sep='_')
+        shutil.move(exp_path, logging_path)
+        print('result saved to %s\n'%os.path.abspath(output_paths[-1]))
 
     return output_paths
 
 def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weight', type=str, default='yolov5x')
-    parser.add_argument('--folds', type=str, nargs='+', default=[0, 1, 2, 3, 4], help='folds for training, i.e. 0 or 0,1,2,3,4')
+    parser.add_argument('--folds', type=int, nargs='+', default=[0, 1, 2, 3, 4], help='folds for training, i.e. 0 or 0,1,2,3,4')
     parser.add_argument('--epochs', type=int, default=35)
     parser.add_argument('--image-size', type=int, default=512)
     parser.add_argument('--batch_size', type=int, default=8)

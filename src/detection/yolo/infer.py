@@ -185,7 +185,7 @@ def main():
     if opt.mode == 'pseudo':
         save_dir = os.path.abspath('../result/pseudo/prediction')
     else:
-        save_dir = os.path.abspath('../result/yolo/submit/{opt.mode}')
+        save_dir = os.path.abspath(f'../result/yolo/submit/{opt.mode}')
 
     for ck_path in ck_paths:
         yolo_infer(ck_path,

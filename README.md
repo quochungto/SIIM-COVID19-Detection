@@ -92,6 +92,7 @@ The downloaded datasets will be placed in directory ```./dataset```, including:
 - ```image-level-psuedo-label-metadata-siim``` metadata for the pseudo label datasets
 - ```ricord-covid19-xray-positive-tests``` RICORD COVID-19 X-ray positive tests dataset
 - ```covid19-posi-dump-siim``` BIMCV COVID-19 dataset
+- ```yolotr-pretrained``` YoloTRs pretrained checkpoint
 - ```mmdet-vfnet-pretrained``` VFNetr50 & VFNetr101 pretrained checkpoints
 
 ## 4. Train models
@@ -104,10 +105,10 @@ $ cd ./src
 Train detectors including ```yolov5s, yolov5m, yolov5l, yolov5x, yolov5s6, yolov5m6, yolov5l6, yolov5x6, yolotrs```
 ```
 # Train a Yolo-Transformer-s for 3 epochs on folds 0 and 1
-$ python ./detection/yolo/train.py --weight yolotrs --folds 0,1 --img 640 --batch 16
+$ python ./detection/yolo/train.py --weight yolotrs --epochs 3 --folds 0,1 --img 640 --batch 16
 ```
 To train on both train data and pseudo-labeled data, add flag ```--pseudo path/to/hard/label/csv``` to the end of the above command.
-Checkpoints will be saved at ```./result/yolo/checkpoints```
+Checkpoints for best epochs will be saved at ```./result/yolo/checkpoints```
 ### 4.1.2. Predict
 ```
 $ python ./detection/yolo/infer.py \
@@ -128,9 +129,9 @@ Ouput .csv files will be saved at ```./result/yolo/submit```
 Train detectors including ```vfnetr50, vfnetr101```
 ```
 # Train a VFNetr50 for 3 epochs on folds 0 and 1
-$ python ./detection/mmdet/train.py --weight vfnetr50 --folds 0,1
+$ python ./detection/mmdet/train.py --weight vfnetr50 --epochs 3 --folds 0,1
 ```
-Checkpoints will be saved at ```./result/mmdet/checkpoints```
+Checkpoints for best epochs will be saved at ```./result/mmdet/checkpoints```
 ### 4.2.2. Predict
 ```
 $ python ./detection/yolo/infer.py \

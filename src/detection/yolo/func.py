@@ -116,8 +116,8 @@ def allocate_files(fold,
         os.makedirs(val_label_dir, exist_ok=True)
 
         df_train, df_valid = make_fold('train-%d'%fold, csv_path, fold_path, duplicate_path, pseudo_csv_path)
-        df_train = df_train[:2]
-        df_valid = df_valid[:2]
+        df_train = df_train[:15]
+        df_valid = df_valid[:15]
 
         if is_train: write_annotations(df_train, train_image_dir, train_label_dir)
         write_annotations(df_valid, val_image_dir, val_label_dir)
