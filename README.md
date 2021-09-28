@@ -52,7 +52,7 @@ Stratified K Fold by StudyID
 
 **Making pseudo labels**
 - Label images with `none_probability > 0.6` as none class images
-- For those have `none_probability <= 0.6`, keep boxes with confident > 0.095
+- For those have `none_probability <= 0.6`, keep boxes with ```confident_score > 0.095```
 These thresholds are chosen in order to maximize the f1 score.
 
 **Training**
@@ -191,5 +191,6 @@ $ --conf 0.001                              # box fusion skip box threshold
 [Pytorch](https://github.com/pytorch/pytorch)\
 [Albumentations](https://github.com/albumentations-team/albumentations)\
 [YoloV5](https://github.com/ultralytics/yolov5)\
+[YoloTR](https://www.gitmemory.com/issue/ultralytics/yolov5/2329/808852867)
 [MMDetection](https://github.com/open-mmlab/mmdetection)\
 [Weighted Boxes Fusion](https://github.com/ZFTurbo/Weighted-Boxes-Fusion)
