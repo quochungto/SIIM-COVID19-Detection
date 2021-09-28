@@ -48,7 +48,7 @@ Stratified K Fold by StudyID
 ### 1.5. Pseudo labels
 
 **Datasets**: Public test set + BIMCV + RICORD
-- For BIMCV, the dataset contains a lot of images which are taken for the left/right side of human body. In order to reduce noise, we manually removed them from the dataset. And since both training and test data in this competition are drawn from this dataset, to avoid leakage in validation, we removed all of the duplicate images and images that have the same StudyID with these duplicates.
+- For BIMCV, the dataset contains a lot of images which are taken for the left/right side of the human body. In order to reduce noise, we manually removed them from the dataset. And since both training and test data in this competition are drawn from this dataset, to avoid leakage in validation, we removed all of the duplicate images and images that have the same StudyID with these duplicates.
 
 **Making pseudo labels**
 - Label images with `none_probability > 0.6` as none class images
@@ -122,7 +122,7 @@ $ --mode remote \                           # 'local' mode for evaluating on val
 $ --image 614 \
 $ --batch 32
 ```
-Ouput .csv files will be saved at ```./result/yolo/submit```
+Output .csv files will be saved at ```./result/yolo/submit```
 
 ### 4.2 VFNet
 ### 4.2.1. Train
@@ -142,7 +142,7 @@ $ --conf 0.0001 \                           # box fusion skip box threshold
 $ --mode remote \                           # 'local' mode for evaluating on validation dataset,
                                               'remote' mode for predicting on test dataset
 ```
-Ouput .csv files will be saved at ```./result/mmdet/submit```
+Output .csv files will be saved at ```./result/mmdet/submit```
 
 ## 5. Generate pseudo labels
 ### 5.1. Predict
@@ -158,7 +158,7 @@ $ --mode pseudo \                            # 'local' mode for evaluating on va
 $ --image 614 \
 $ --batch 32
 ```
-Ouput .csv files will be saved at ```./result/pseudo/prediction/```
+Output .csv files will be saved at ```./result/pseudo/prediction/```
 
 ### 5.2. Ensemble & Hard-label data
 ```
@@ -171,7 +171,7 @@ $ --conf 0.001 \               # box fusion skip box threshold
 $ --none 0.6 \                 # threshold for hard-labeling images as none-class
 $ --opacity 0.095              # threshold for hard-labeling images as opacity-class
 ```
-Ouput .csv files will be saved at ```./result/pseudo/hard_label/```
+Output .csv files will be saved at ```./result/pseudo/hard_label/```
 
 ## 6. Ensemble & Post-process & Final submission
 Final submission file will be named ```submission.csv``` and saved at ```./result/submission```.
