@@ -191,6 +191,6 @@ $ --conf 0.001                              # box fusion skip box threshold
 [Pytorch](https://github.com/pytorch/pytorch)\
 [Albumentations](https://github.com/albumentations-team/albumentations)\
 [YoloV5](https://github.com/ultralytics/yolov5)\
-[YoloTR](https://www.gitmemory.com/issue/ultralytics/yolov5/2329/808852867)
+[YoloTR](https://www.gitmemory.com/issue/ultralytics/yolov5/2329/808852867)\
 [MMDetection](https://github.com/open-mmlab/mmdetection)\
 [Weighted Boxes Fusion](https://github.com/ZFTurbo/Weighted-Boxes-Fusion)
