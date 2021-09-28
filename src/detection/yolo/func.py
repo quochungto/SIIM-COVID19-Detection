@@ -116,8 +116,8 @@ def allocate_files(fold,
         os.makedirs(val_label_dir, exist_ok=True)
 
         df_train, df_valid = make_fold('train-%d'%fold, csv_path, fold_path, duplicate_path, pseudo_csv_path)
-        df_train = df_train[:15]
-        df_valid = df_valid[:15]
+        df_train = df_train
+        df_valid = df_valid
 
         if is_train: write_annotations(df_train, train_image_dir, train_label_dir)
         write_annotations(df_valid, val_image_dir, val_label_dir)
@@ -139,7 +139,7 @@ def allocate_files(fold,
         os.makedirs(test_image_dir, exist_ok=True)
 
         df_test = make_fold('test', csv_path)
-        df_test = df_test[:2]
+        df_test = df_test
 
         write_annotations(df_test, test_image_dir, None)
 
@@ -167,5 +167,3 @@ def get_image_sub(prediction_path, df_test):
             PredictionStrings.append(' '.join(bboxes))
 
     return pd.DataFrame({'id': image_ids, 'PredictionString': PredictionStrings})
-
-

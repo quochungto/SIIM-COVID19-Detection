@@ -30,6 +30,6 @@ def allocate_pseudo_files(save_dir):
     os.makedirs(save_dir, exist_ok=True)
 
     #df = get_df()
-    df = pd.read_csv('../dataset/image-level-psuedo-label-metadata-siim/bimcv_ricord.csv')[:2]
+    df = pd.read_csv('../dataset/image-level-psuedo-label-metadata-siim/bimcv_ricord.csv')
     for _, row in tqdm(df.iterrows(), total=len(df)):
         shutil.copy(row['filepath'], save_dir)
